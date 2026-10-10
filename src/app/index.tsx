@@ -11,6 +11,15 @@ export default function Index() {
   const [age, setAge] = useState("");
   const [address, setAddress] = useState("");
 
+  function handleEdit() {
+    // Implement edit functionality here
+    
+  }
+
+  function handleDelete() {
+    // Implement delete functionality here
+  }
+
   const renderItem = ({ item }) => (
     <View className="mb-4 rounded-lg bg-white p-4 shadow">
       <Text className="text-lg font-semibold text-gray-900">
@@ -23,10 +32,10 @@ export default function Index() {
       <Text className="text-gray-700">{item.address}</Text>
 
       <View className="mt-4 flex-row justify-end space-x-4 gap-3">
-        <TouchableOpacity className="rounded-lg bg-blue-500 px-4 py-2">
+        <TouchableOpacity onPress={handleEdit} className="rounded-lg bg-blue-500 px-4 py-2">
           <Text className="text-white">Edit</Text>
         </TouchableOpacity>
-        <TouchableOpacity className="rounded-lg bg-red-500 px-4 py-2">
+        <TouchableOpacity onPress={handleDelete} className="rounded-lg bg-red-500 px-4 py-2">
           <Text className="text-white">Delete</Text>
         </TouchableOpacity>
       </View>
