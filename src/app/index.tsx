@@ -1,4 +1,4 @@
-import { FlatList, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { FlatList, Text, TextInput, TouchableOpacity, View, Modal } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
 
@@ -11,33 +11,162 @@ export default function Index() {
   const [age, setAge] = useState("");
   const [address, setAddress] = useState("");
 
-  function handleEdit() {
-    // Implement edit functionality here
-    
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [editUserId, setEditUserId] = useState(null);
+
+
+  function handleEdit(user) {
+    setEditUserId(user.id);
+    setName(user.name);
+    setEmail(user.email);
+    setContact(user.contact);
+    setAge(user.age);
+    setAddress(user.address);
+
+    setEditModalVisible(true);
   }
 
-  function handleDelete() {
-    // Implement delete functionality here
+  function handleDelete(user) {
+    setUsers((prevUsers) =>
+      prevUsers.filter((item) => item.id !== user.id)
+    );
   }
+
+
+  function handleUpdate() {
+    setUsers((prevUsers) =>
+      prevUsers.map((user) =>
+        user.id === editUserId
+          ? {
+            ...user,
+            name,
+            email,
+            contact,
+            age,
+            address,
+          }
+          : user
+      )
+    );
+
+    setEditModalVisible(false);
+    setEditUserId(null);
+
+    setName("");
+    setEmail("");
+    setContact("");
+    setAge("");
+    setAddress("");
+  }
+
+  const editModal = () => (
+    <Modal
+      visible={editModalVisible}
+      transparent={true}
+      animationType="slide"
+      onRequestClose={() => setEditModalVisible(false)}
+    >
+      <View className="flex-1 justify-center bg-black/50 px-5">
+        <View className="rounded-2xl bg-white p-5">
+          <Text className="mb-5 text-2xl font-bold text-gray-900">
+            Edit User
+          </Text>
+
+          <TextInput
+            value={name}
+            onChangeText={setName}
+            placeholder="Full Name"
+            className="mb-3 rounded-xl border border-gray-200 px-4 py-3"
+          />
+
+          <TextInput
+            value={email}
+            onChangeText={setEmail}
+            placeholder="Email"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            className="mb-3 rounded-xl border border-gray-200 px-4 py-3"
+          />
+
+          <TextInput
+            value={contact}
+            onChangeText={setContact}
+            placeholder="Phone Number"
+            keyboardType="phone-pad"
+            className="mb-3 rounded-xl border border-gray-200 px-4 py-3"
+          />
+
+          <TextInput
+            value={age}
+            onChangeText={setAge}
+            placeholder="Age"
+            keyboardType="numeric"
+            className="mb-3 rounded-xl border border-gray-200 px-4 py-3"
+          />
+
+          <TextInput
+            value={address}
+            onChangeText={setAddress}
+            placeholder="Address"
+            multiline
+            numberOfLines={3}
+            textAlignVertical="top"
+            className="mb-5 min-h-24 rounded-xl border border-gray-200 px-4 py-3"
+          />
+
+          <View className="flex-row gap-3">
+            <TouchableOpacity
+              onPress={handleUpdate}
+              className="flex-1 rounded-xl bg-blue-600 py-3"
+            >
+              <Text className="text-center font-bold text-white">
+                Update
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => setEditModalVisible(false)}
+              className="flex-1 rounded-xl bg-gray-200 py-3"
+            >
+              <Text className="text-center font-bold text-gray-800">
+                Cancel
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+
+
 
   const renderItem = ({ item }) => (
     <View className="mb-4 rounded-lg bg-white p-4 shadow">
       <Text className="text-lg font-semibold text-gray-900">
         {item.name}
       </Text>
-      <Text className="text-gray-700">{item.id}</Text>
+      {/* <Text className="text-gray-700">{item.id}</Text> */}
       <Text className="text-gray-700">{item.email}</Text>
       <Text className="text-gray-700">{item.contact}</Text>
       <Text className="text-gray-700">{item.age}</Text>
       <Text className="text-gray-700">{item.address}</Text>
 
       <View className="mt-4 flex-row justify-end space-x-4 gap-3">
-        <TouchableOpacity onPress={handleEdit} className="rounded-lg bg-blue-500 px-4 py-2">
+
+        <TouchableOpacity
+          onPress={() => handleEdit(item)}
+          className="rounded-lg bg-blue-500 px-4 py-2"
+        >
           <Text className="text-white">Edit</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleDelete} className="rounded-lg bg-red-500 px-4 py-2">
+
+        <TouchableOpacity
+          onPress={() => handleDelete(item)}
+          className="rounded-lg bg-red-500 px-4 py-2"
+        >
           <Text className="text-white">Delete</Text>
         </TouchableOpacity>
+
       </View>
     </View>
   );
@@ -183,7 +312,7 @@ export default function Index() {
         data={users}
         renderItem={renderItem}
         keyboardShouldPersistTaps="handled"
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item) => item.id}
         ListHeaderComponent={form}
         contentContainerStyle={{
           paddingHorizontal: 20,
@@ -191,7 +320,7 @@ export default function Index() {
         }}
 
       />
-
+      {editModal()}
 
     </SafeAreaView>
   );
